@@ -1,9 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 
 function ProductCard({ product }) {
+  const { dispatch } = useCart();
+  const navigate = useNavigate();
+  
   const handleAddToCart = () => {
-    alert(`✨ ${product.title} added to cart! 🛍️`);
+    dispatch({ type: 'ADD_ITEM', payload: product });
+    
+    if (window.confirm(`✨ ${product.title} added to cart! 🛍️\n\nWould you like to proceed to checkout?`)) {
+      navigate('/checkout');
+    }
   };
 
   const isLowStock = product.inventory_count <= 10;
