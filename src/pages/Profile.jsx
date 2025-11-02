@@ -1,35 +1,34 @@
-import React from 'react';
-import { useAuth } from '../context';
+import React from 'react'
+import { useAuth } from '../context/AuthContext'
 
-export default function Profile() {
-  const { state } = useAuth();
+const Profile = () => {
+  const { user, isAuthenticated, logout } = useAuth()
 
-  if (!state.isAuthenticated) {
+  if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-blue-600">Please log in to view your profile.</p>
+      <div style={{padding: '40px', textAlign: 'center'}}>
+        <h1 style={{fontSize: '32px', marginBottom: '20px'}}>👤 Profile</h1>
+        <p>Please login to view your profile</p>
       </div>
-    );
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-4xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-blue-900 mb-8">Profile</h1>
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-blue-700 mb-4">Account Information</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Email</label>
-              <p className="text-gray-900">{state.user?.email}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Name</label>
-              <p className="text-gray-900">{state.user?.name || 'Not provided'}</p>
-            </div>
-          </div>
-        </div>
+    <div style={{padding: '40px', maxWidth: '600px', margin: '0 auto'}}>
+      <h1 style={{fontSize: '32px', marginBottom: '32px'}}>👤 Profile</h1>
+      <div style={{backgroundColor: '#f9fafb', padding: '24px', borderRadius: '8px', marginBottom: '24px'}}>
+        <h2 style={{fontSize: '20px', marginBottom: '16px'}}>User Information</h2>
+        <p><strong>Name:</strong> {user?.name || 'N/A'}</p>
+        <p><strong>Email:</strong> {user?.email || 'N/A'}</p>
       </div>
+      <button
+        onClick={logout}
+        style={{backgroundColor: '#ef4444', color: 'white', padding: '12px 24px', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
+      >
+        Logout
+      </button>
     </div>
-  );
+  )
 }
+
+export default Profile

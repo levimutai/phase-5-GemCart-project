@@ -4,13 +4,13 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
-  const { state, dispatch } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { state: cartState, cartTotal } = useCart();
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
   
   const handleLogout = () => {
-    dispatch({ type: 'LOGOUT' });
+    logout();
   };
 
   const handleSearch = (e) => {
@@ -50,10 +50,10 @@ const Navbar = () => {
               </span>
             )}
           </Link>
-          {state.isAuthenticated ? (
+          {isAuthenticated ? (
             <>
-              <Link to="/profile" className="text-blue-600 font-medium hover:text-blue-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-white rounded px-2 py-1" role="status" aria-live="polite">👤 Hello, {state.user.username}</Link>
-              {state.user.is_seller && (
+              <Link to="/profile" className="text-blue-600 font-medium hover:text-blue-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-white rounded px-2 py-1" role="status" aria-live="polite">👤 Hello, {user?.name || 'User'}</Link>
+              {user?.is_seller && (
                 <span className="bg-gradient-to-r from-blue-400 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold" role="status">
                   👑 SELLER
                 </span>

@@ -1,55 +1,84 @@
-import React, { createContext, useReducer, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react'
 
-const AuthContext = createContext();
-
-const initialState = {
-  user: JSON.parse(localStorage.getItem('user')) || null,
-  token: localStorage.getItem('token') || null,
-  isAuthenticated: !!localStorage.getItem('token'),
-};
-
-function reducer(state, action) {
-  switch (action.type) {
-    case 'LOGIN':
-      localStorage.setItem('token', action.payload.token);
-      localStorage.setItem('user', JSON.stringify(action.payload.user));
-      return { ...state, user: action.payload.user, token: action.payload.token, isAuthenticated: true };
-    case 'LOGOUT':
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      return { user: null, token: null, isAuthenticated: false };
-    default:
-      return state;
-  }
-}
+const AuthContext = createContext()
 
 export function AuthProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  // Simple state variables
+  const [user, setUser] = useState(null)
+  const [token, setToken] = useState(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
+  // Load saved data when app starts
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user')
+    const savedToken = localStorage.getItem('token')
+    
+    if (savedUser && savedToken) {
+      setUser(JSON.parse(savedUser))
+      setToken(savedToken)
+      setIsAuthenticated(true)
+    }
+  }, [])
+
+  // Simple login function
+  const login = (userData, userToken) => {
+    setUser(userData)
+    setToken(userToken)
+    setIsAuthenticated(true)
+    
+    // Save to browser storage
+    localStorage.setItem('user', JSON.stringify(userData))
+    localStorage.setItem('token', userToken)
+  }
+
+  // Simple logout function
+  const logout = () => {
+    setUser(null)
+    setToken(null)
+    setIsAuthenticated(false)
+    
+    // Clear browser storage
+    localStorage.removeItem('user')
+    localStorage.removeItem('token')
+  }
+
+  // Easy API fetch with automatic auth headers
   const authFetch = async (url, options = {}) => {
-    const defaultHeaders = {
+    const headers = {
       'Content-Type': 'application/json',
-      ...options.headers,
-    };
-
-    if (state.token) {
-      defaultHeaders['Authorization'] = `Bearer ${state.token}`;
+      ...options.headers
     }
 
-    const response = await fetch(url, { ...options, headers: defaultHeaders });
+    // Add auth token if user is logged in
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
 
+    const response = await fetch(url, { ...options, headers })
+
+    // Auto logout if token expired
     if (response.status === 401) {
-      dispatch({ type: 'LOGOUT' });
+      logout()
     }
 
-    return response;
-  };
+    return response
+  }
+
+  // Provide all auth data and functions
+  const value = {
+    user,
+    token,
+    isAuthenticated,
+    login,
+    logout,
+    authFetch
+  }
 
   return (
-    <AuthContext.Provider value={{ state, dispatch, authFetch }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
-  );
+  )
 }
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => useContext(AuthContext)
