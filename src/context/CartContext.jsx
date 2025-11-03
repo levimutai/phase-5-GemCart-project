@@ -22,6 +22,17 @@ export function CartProvider({ children }) {
   const dispatch = (action) => {
     if (action.type === 'CLEAR_CART') {
       clearCart()
+    } else if (action.type === 'ADD_ITEM') {
+      const existingItem = items.find(item => item.id === action.payload.id)
+      if (existingItem) {
+        setItems(prev => prev.map(item => 
+          item.id === action.payload.id 
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        ))
+      } else {
+        setItems(prev => [...prev, action.payload])
+      }
     }
   }
 
