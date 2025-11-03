@@ -23,7 +23,6 @@ function ProductCard({ product }) {
     const jewelryImages = {
       'Rings': [
         'https://i.pinimg.com/736x/6e/0d/dd/6e0ddd9590f6d49a68e5b7b097c222cf.jpg',
-        'https://i.pinimg.com/1200x/66/31/94/663194433984d1c9a6e62b2005194949.jpg',
         'https://i.pinimg.com/736x/93/e0/44/93e04420005de989328f04bff698c237.jpg',
         'https://i.pinimg.com/736x/d0/ea/fa/d0eafad1dc3eadc1bd9405e56f1c7b70.jpg'
       ],
@@ -42,18 +41,22 @@ function ProductCard({ product }) {
       'Earrings': [
         'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&h=400&fit=crop&auto=format',
         'https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=400&h=400&fit=crop&auto=format',
-        'https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?w=400&h=400&fit=crop&auto=format',
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format'
+       
+        
       ],
       'Bracelets': [
         'https://i.pinimg.com/1200x/f8/24/e9/f824e9e970fbc6f11595b51f9bfde3c3.jpg',
         'https://i.pinimg.com/736x/d6/b6/9f/d6b69f5318eb42d58e3812b16ff50a01.jpg',
         'https://i.pinimg.com/1200x/d1/3d/12/d13d1243d6cdb6607832fc3123f63fe9.jpg',
         'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=800&h=800&fit=crop&auto=format'
+        
       ]
     };
     
-    if (product.image_url) return product.image_url;
+    // Always use product.image_url if it exists
+    if (product.image_url) {
+      return product.image_url;
+    }
     
     const categoryName = product.categories?.[0]?.name || 'Rings';
     const categoryImages = jewelryImages[categoryName] || jewelryImages['Rings'];

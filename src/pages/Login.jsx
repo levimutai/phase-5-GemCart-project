@@ -1,49 +1,114 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { loginUser, registerUser } from '../services/api'
 
 const Login = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [isLogin, setIsLogin] = useState(true)
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: ''
+  })
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Simulate login
-    const userData = { name: 'John Doe', email }
-    const token = 'sample-token-123'
-    login(userData, token)
-    navigate('/')
+    
+    // Demo mode login (backend connection will be added later)
+    if (isLogin) {
+      if (formData.email === 'seller@gemcart.com' && formData.password === 'password') {
+        const user = {
+          id: 1,
+          username: 'Seller',
+          email: 'seller@gemcart.com',
+          is_seller: true
+        }
+        login(user, 'demo-token')
+        alert('Login successful!')
+        navigate('/products')
+      } else if (formData.email && formData.password) {
+        const user = {
+          id: 2,
+          username: formData.email.split('@')[0],
+          email: formData.email,
+          is_seller: false
+        }
+        login(user, 'demo-token')
+        alert('Login successful!')
+        navigate('/products')
+      } else {
+        alert('Please enter email and password')
+      }
+    } else {
+      if (formData.username && formData.email && formData.password) {
+        alert('Registration successful! Please login.')
+        setIsLogin(true)
+        setFormData({ username: '', email: formData.email, password: '' })
+      } else {
+        alert('Please fill all fields')
+      }
+    }
   }
 
   return (
-    <div style={{padding: '40px', maxWidth: '400px', margin: '0 auto'}}>
-      <h1 style={{fontSize: '32px', textAlign: 'center', marginBottom: '32px'}}>🔑 Login</h1>
-      <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '16px'}}>
-        <input
-          type="email"
+    <div className="container mx-auto p-4 max-w-md">
+      <h1 className="text-3xl font-bold mb-6">{isLogin ? 'Login' : 'Register'}</h1>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {!isLogin && (
+          <input 
+            type="text" 
+            placeholder="Username"
+            value={formData.username}
+            onChange={(e) => setFormData({...formData, username: e.target.value})}
+            className="w-full p-2 border rounded"
+            required
+          />
+        )}
+        
+        <input 
+          type="email" 
           placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{padding: '12px', border: '1px solid #ccc', borderRadius: '4px'}}
+          value={formData.email}
+          onChange={(e) => setFormData({...formData, email: e.target.value})}
+          className="w-full p-2 border rounded"
           required
         />
-        <input
-          type="password"
+        
+        <input 
+          type="password" 
           placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{padding: '12px', border: '1px solid #ccc', borderRadius: '4px'}}
+          value={formData.password}
+          onChange={(e) => setFormData({...formData, password: e.target.value})}
+          className="w-full p-2 border rounded"
           required
         />
-        <button
+        
+        <button 
           type="submit"
-          style={{backgroundColor: '#3b82f6', color: 'white', padding: '12px', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
         >
-          Login
+          {isLogin ? 'Login' : 'Register'}
         </button>
       </form>
+      
+      <p className="mt-4 text-center">
+        {isLogin ? "Don't have an account? " : "Already have an account? "}
+        <button 
+          onClick={() => setIsLogin(!isLogin)}
+          className="text-blue-600 hover:underline"
+        >
+          {isLogin ? 'Register' : 'Login'}
+        </button>
+      </p>
+      
+      <div className="mt-6 p-4 bg-gray-100 rounded">
+        <p className="text-sm"><strong>Test Seller Account:</strong></p>
+        <p className="text-sm">Email: seller@gemcart.com</p>
+        <p className="text-sm">Password: password</p>
+      </div>
     </div>
   )
 }
